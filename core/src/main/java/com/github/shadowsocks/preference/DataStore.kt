@@ -59,7 +59,7 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var profileId: Long
         get() = publicStore.getLong(Key.id) ?: 0
         set(value) = publicStore.putLong(Key.id, value)
-    val persistAcrossReboot get() = publicStore.getBoolean(Key.persistAcrossReboot)
+    val persistAcrossReboot get() = publicStore.getBoolean(Key.persistAcrossReboot, true)
             ?: BootReceiver.enabled.also { publicStore.putBoolean(Key.persistAcrossReboot, it) }
     val canToggleLocked: Boolean get() = publicStore.getBoolean(Key.directBootAware) == true
     val directBootAware: Boolean get() = Core.directBootSupported && canToggleLocked

@@ -21,15 +21,18 @@
 package com.github.shadowsocks.bg
 
 import android.app.KeyguardManager
+import android.content.BroadcastReceiver
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
+import com.github.shadowsocks.AppManager
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.R
 import com.github.shadowsocks.aidl.IShadowsocksService
 import com.github.shadowsocks.aidl.ShadowsocksConnection
 import com.github.shadowsocks.preference.DataStore
+import com.github.shadowsocks.utils.listenForPackageChanges
 import android.service.quicksettings.TileService as BaseTileService
 
 @RequiresApi(24)
@@ -39,6 +42,7 @@ class TileService : BaseTileService(), ShadowsocksConnection.Callback {
     private val iconConnected by lazy { Icon.createWithResource(this, R.drawable.ic_service_active) }
     private val keyguard by lazy { getSystemService<KeyguardManager>()!! }
     private var tapPending = false
+    private var receiver: BroadcastReceiver? = null
 
     private val connection = ShadowsocksConnection()
     override fun stateChanged(state: BaseService.State, profileName: String?, msg: String?) =
@@ -48,6 +52,10 @@ class TileService : BaseTileService(), ShadowsocksConnection.Callback {
         if (tapPending) {
             tapPending = false
             onClick()
+        }
+
+        if (receiver == null) receiver = Core.app.listenForPackageChanges(false) {
+            toggle()
         }
     }
 

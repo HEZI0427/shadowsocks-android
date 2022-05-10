@@ -205,6 +205,10 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback, OnPref
     override fun onStart() {
         super.onStart()
         connection.bandwidthTimeout = 500
+
+        if (!state.canStop) {
+            connect.launch(null)
+        }
     }
 
     override fun onBackPressed() {
